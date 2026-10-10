@@ -141,7 +141,19 @@ npm run dev
 
 ## 截图
 
-> 待补充：设备管理页、遥测曲线、工单流转、AI 诊断对话
+> 系统演示视频关键帧，按时间顺序排列（截图名即视频时间点）。
+
+<table>
+<tr><td align="center"><img src="docs/screenshots/00m20s.jpg" width="95%" alt="00:20" /><br/><b>00:20</b></td><td align="center"><img src="docs/screenshots/00m25s.jpg" width="95%" alt="00:25" /><br/><b>00:25</b></td><td align="center"><img src="docs/screenshots/00m40s.jpg" width="95%" alt="00:40" /><br/><b>00:40</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/00m50s.jpg" width="95%" alt="00:50" /><br/><b>00:50</b></td><td align="center"><img src="docs/screenshots/01m05s.jpg" width="95%" alt="01:05" /><br/><b>01:05</b></td><td align="center"><img src="docs/screenshots/01m10s.jpg" width="95%" alt="01:10" /><br/><b>01:10</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/01m15s.jpg" width="95%" alt="01:15" /><br/><b>01:15</b></td><td align="center"><img src="docs/screenshots/01m40s.jpg" width="95%" alt="01:40" /><br/><b>01:40</b></td><td align="center"><img src="docs/screenshots/01m45s.jpg" width="95%" alt="01:45" /><br/><b>01:45</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/02m00s.jpg" width="95%" alt="02:00" /><br/><b>02:00</b></td><td align="center"><img src="docs/screenshots/02m20s.jpg" width="95%" alt="02:20" /><br/><b>02:20</b></td><td align="center"><img src="docs/screenshots/02m40s.jpg" width="95%" alt="02:40" /><br/><b>02:40</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/02m50s.jpg" width="95%" alt="02:50" /><br/><b>02:50</b></td><td align="center"><img src="docs/screenshots/02m55s.jpg" width="95%" alt="02:55" /><br/><b>02:55</b></td><td align="center"><img src="docs/screenshots/03m00s.jpg" width="95%" alt="03:00" /><br/><b>03:00</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/03m05s.jpg" width="95%" alt="03:05" /><br/><b>03:05</b></td><td align="center"><img src="docs/screenshots/03m10s.jpg" width="95%" alt="03:10" /><br/><b>03:10</b></td><td align="center"><img src="docs/screenshots/03m20s.jpg" width="95%" alt="03:20" /><br/><b>03:20</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/03m25s.jpg" width="95%" alt="03:25" /><br/><b>03:25</b></td><td align="center"><img src="docs/screenshots/03m30s.jpg" width="95%" alt="03:30" /><br/><b>03:30</b></td><td align="center"><img src="docs/screenshots/03m35s.jpg" width="95%" alt="03:35" /><br/><b>03:35</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/03m40s.jpg" width="95%" alt="03:40" /><br/><b>03:40</b></td><td align="center"><img src="docs/screenshots/03m45s.jpg" width="95%" alt="03:45" /><br/><b>03:45</b></td><td align="center"><img src="docs/screenshots/04m10s.jpg" width="95%" alt="04:10" /><br/><b>04:10</b></td></tr>
+<tr><td align="center"><img src="docs/screenshots/04m55s.jpg" width="95%" alt="04:55" /><br/><b>04:55</b><br/><sub>同一账号二次登录提示（单点登录互斥）</sub></td><td align="center"><img src="docs/screenshots/05m20s.jpg" width="95%" alt="05:20" /><br/><b>05:20</b></td><td></td></tr>
+</table>
 
 ## 许可
 
