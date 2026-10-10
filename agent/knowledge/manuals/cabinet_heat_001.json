@@ -1,0 +1,22 @@
+{
+  "id": "cabinet_heat_001",
+  "device_type": "配电柜",
+  "fault_type": "散热故障",
+  "fault_phenomenon": "配电柜内部温度持续升高，柜体发烫，断路器可能因高温误动作。",
+  "telemetry_signature": "temperature 持续高于 fault_threshold；可能伴随 current 偏高。",
+  "possible_causes": [
+    "散热风扇损坏或通风口堵塞",
+    "柜内积尘严重",
+    "环境温度过高",
+    "负载长期偏高"
+  ],
+  "troubleshoot_steps": [
+    "检查柜内散热风扇",
+    "检查通风口与滤网",
+    "测量柜内各点温度",
+    "核对负载率"
+  ],
+  "repair_method": "更换散热风扇；清理通风口与滤网；改善环境通风；降低负载或增加散热装置。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

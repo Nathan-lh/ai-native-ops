@@ -1,0 +1,22 @@
+{
+  "id": "motor_overload_001",
+  "device_type": "电机",
+  "fault_type": "过载",
+  "fault_phenomenon": "电机电流突增或持续偏高，转速下降，机身温度升高，可能伴随异响。",
+  "telemetry_signature": "current 突增或持续高于 fault_threshold；temperature 同步上升。",
+  "possible_causes": [
+    "负载机械阻力过大",
+    "轴承卡涩或损坏",
+    "电压过低导致电流增大",
+    "电机绕组局部短路"
+  ],
+  "troubleshoot_steps": [
+    "检查负载端是否卡死或异物阻塞",
+    "手动盘车判断轴承是否卡涩",
+    "测量供电电压是否正常",
+    "测量绕组绝缘电阻与直流电阻"
+  ],
+  "repair_method": "清理负载异物；更换轴承；修复供电电压；重绕或更换电机绕组。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "common_offline_001",
+  "device_type": "通用",
+  "fault_type": "掉线",
+  "fault_phenomenon": "设备心跳丢失，遥测数据中断，平台无法获取最新状态。",
+  "telemetry_signature": "telemetry 中断；last_seen 超过预期上报周期。",
+  "possible_causes": [
+    "设备断电",
+    "网络中断",
+    "MQTT Broker 连接失败",
+    "设备固件死机"
+  ],
+  "troubleshoot_steps": [
+    "确认设备是否断电",
+    "检查网络链路与交换机",
+    "检查 EMQX 连接状态",
+    "尝试重启设备"
+  ],
+  "repair_method": "恢复供电；修复网络；重启 MQTT 客户端；升级或重启设备固件。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "sensor_voltage_001",
+  "device_type": "温湿度传感器",
+  "fault_type": "电压不稳",
+  "fault_phenomenon": "传感器供电电压波动，数据上报断断续续，或读数异常跳变。",
+  "telemetry_signature": "上报不连续；读数偶发跳变。",
+  "possible_causes": [
+    "电池电量不足",
+    "供电线路接触不良",
+    "电源适配器故障",
+    "电磁干扰"
+  ],
+  "troubleshoot_steps": [
+    "测量电池或适配器电压",
+    "检查供电端子",
+    "更换电源适配器",
+    "排查电磁干扰源"
+  ],
+  "repair_method": "更换电池或电源适配器；紧固端子；远离干扰源或增加屏蔽。",
+  "severity": "低",
+  "source": "自建运维手册"
+}

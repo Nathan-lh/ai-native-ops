@@ -1,0 +1,22 @@
+{
+  "id": "common_power_001",
+  "device_type": "通用",
+  "fault_type": "电源故障",
+  "fault_phenomenon": "设备频繁重启或无法开机，供电异常。",
+  "telemetry_signature": "设备启动记录频繁；上报数据断断续续。",
+  "possible_causes": [
+    "电源模块损坏",
+    "供电电压异常",
+    "电源线接触不良",
+    "电源容量不足"
+  ],
+  "troubleshoot_steps": [
+    "测量供电电压",
+    "检查电源模块输出",
+    "检查电源线连接",
+    "核对设备功耗与电源容量"
+  ],
+  "repair_method": "更换电源模块；稳定供电；重新插拔或更换电源线；更换容量更大的电源。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "motor_humidity_001",
+  "device_type": "电机",
+  "fault_type": "湿度过高",
+  "fault_phenomenon": "电机运行环境湿度偏高，绕组受潮，绝缘电阻下降，可能引发短路。",
+  "telemetry_signature": "humidity 持续超过 warn_threshold；绝缘电阻下降。",
+  "possible_causes": [
+    "环境湿度高或存在冷凝水",
+    "电机防护等级不足",
+    "长期停机后未做干燥处理",
+    "密封件老化"
+  ],
+  "troubleshoot_steps": [
+    "测量绕组绝缘电阻",
+    "检查电机密封与防护等级",
+    "检查环境湿度来源",
+    "检查是否有冷凝水"
+  ],
+  "repair_method": "烘干绕组；更换密封件；提升防护等级；改善环境通风或增加除湿设备。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

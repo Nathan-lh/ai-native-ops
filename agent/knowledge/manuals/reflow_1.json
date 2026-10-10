@@ -1,0 +1,14 @@
+{
+  "id": "reflow_1",
+  "device_type": "空调",
+  "fault_type": "未分类",
+  "fault_phenomenon": "DEV-空调-001 温度持续升高，疑似散热故障",
+  "telemetry_signature": "",
+  "possible_causes": [],
+  "troubleshoot_steps": [],
+  "repair_method": "清洗冷凝器，更换风扇",
+  "severity": "中",
+  "source": "工单回流 order_id=4",
+  "_repair_reason": "冷凝器积尘严重导致散热不良",
+  "_order_id": 4
+}

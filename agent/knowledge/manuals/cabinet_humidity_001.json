@@ -1,0 +1,22 @@
+{
+  "id": "cabinet_humidity_001",
+  "device_type": "配电柜",
+  "fault_type": "湿度过高",
+  "fault_phenomenon": "配电柜内部湿度偏高，柜内壁或母排出现凝露，绝缘下降。",
+  "telemetry_signature": "humidity 持续超过 warn_threshold；绝缘电阻下降。",
+  "possible_causes": [
+    "柜体密封不良，湿气进入",
+    "环境湿度高",
+    "加热除湿装置失效",
+    "电缆沟潮气上升"
+  ],
+  "troubleshoot_steps": [
+    "检查柜体密封",
+    "检查加热除湿装置",
+    "检查电缆沟封堵",
+    "测量绝缘电阻"
+  ],
+  "repair_method": "修复密封；更换加热除湿装置；封堵电缆沟；加强通风或增加除湿设备。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

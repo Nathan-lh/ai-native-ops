@@ -1,0 +1,22 @@
+{
+  "id": "sensor_drift_001",
+  "device_type": "温湿度传感器",
+  "fault_type": "数据漂移",
+  "fault_phenomenon": "传感器读数与标准值偏差逐渐增大，长时间未校准。",
+  "telemetry_signature": "读数与同环境其他传感器差异持续增大。",
+  "possible_causes": [
+    "探头老化",
+    "长期未校准",
+    "环境污染（粉尘、腐蚀气体）",
+    "供电电压不稳定"
+  ],
+  "troubleshoot_steps": [
+    "与标准仪器对比读数",
+    "检查探头污染情况",
+    "检查供电电压",
+    "查看上次校准时间"
+  ],
+  "repair_method": "重新校准；清洁或更换探头；稳定供电；缩短校准周期。",
+  "severity": "低",
+  "source": "自建运维手册"
+}

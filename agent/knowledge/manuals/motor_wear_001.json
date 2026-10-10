@@ -1,0 +1,22 @@
+{
+  "id": "motor_wear_001",
+  "device_type": "电机",
+  "fault_type": "机械磨损",
+  "fault_phenomenon": "电机振动幅度持续增大，噪声变大，长期运行可能引起轴承损坏。",
+  "telemetry_signature": "vibration 持续增大，可能呈阶梯式或线性上升。",
+  "possible_causes": [
+    "轴承磨损或润滑不足",
+    "联轴器对中不良",
+    "转子动平衡破坏",
+    "地脚螺栓松动"
+  ],
+  "troubleshoot_steps": [
+    "检查轴承润滑与间隙",
+    "检查联轴器对中情况",
+    "检查地脚螺栓是否松动",
+    "必要时做动平衡测试"
+  ],
+  "repair_method": "补充或更换润滑脂；更换轴承；重新对中；紧固地脚螺栓；做动平衡校正。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "sensor_humidity_001",
+  "device_type": "温湿度传感器",
+  "fault_type": "湿度过高",
+  "fault_phenomenon": "传感器探头长期处于高湿环境，读数偏高或漂移，甚至短路失效。",
+  "telemetry_signature": "humidity 读数长期异常偏高；可能偏离其他传感器读数。",
+  "possible_causes": [
+    "探头受潮或结露",
+    "探头防护涂层老化",
+    "安装位置靠近水源",
+    "环境长期高湿"
+  ],
+  "troubleshoot_steps": [
+    "检查探头是否有凝露",
+    "对比其他传感器读数",
+    "检查安装位置",
+    "检查防护涂层"
+  ],
+  "repair_method": "烘干探头；更换探头；更换防护等级更高的型号；调整安装位置。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

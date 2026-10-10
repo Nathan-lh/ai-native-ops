@@ -1,0 +1,22 @@
+{
+  "id": "cabinet_overload_001",
+  "device_type": "配电柜",
+  "fault_type": "过载",
+  "fault_phenomenon": "配电柜总电流持续偏高，柜内温度上升，断路器可能发热或跳闸。",
+  "telemetry_signature": "current 持续高于 fault_threshold；temperature 同步上升。",
+  "possible_causes": [
+    "后端负载过多",
+    "线路老化导致电阻增大",
+    "断路器规格偏小",
+    "存在短路或漏电"
+  ],
+  "troubleshoot_steps": [
+    "统计后端负载总功率",
+    "测量线路绝缘与漏电流",
+    "检查断路器规格与温度",
+    "检查是否存在短路点"
+  ],
+  "repair_method": "减少负载或扩容；更换老化线路；更换合适断路器；排查并修复短路漏电点。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

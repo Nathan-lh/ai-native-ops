@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+# ============================================
+# AI-Native 设备智能运维平台 —— Agent 服务依赖
+# ============================================
+# Agent 服务依赖（FastAPI + LangGraph + Chroma + 嵌入模型 + DeepSeek SDK）
+
+fastapi             # Web 框架，提供 REST 接口
+uvicorn[standard]   # ASGI 服务器，运行 FastAPI（[standard] 附带 uvloop 等性能优化）
+chromadb==1.5.9
+rank-bm25==0.2.2
+sentence-transformers==6.1.0
+torch==2.14.1
+transformers==5.18.0

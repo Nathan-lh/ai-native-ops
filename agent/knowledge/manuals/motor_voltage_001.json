@@ -1,0 +1,22 @@
+{
+  "id": "motor_voltage_001",
+  "device_type": "电机",
+  "fault_type": "电压不稳",
+  "fault_phenomenon": "电机供电电压波动，转速不稳，启停异常。",
+  "telemetry_signature": "voltage 周期性抖动，波动幅度超过正常范围。",
+  "possible_causes": [
+    "供电线路接触不良",
+    "同线路大功率设备频繁启停",
+    "变频器或软启动器故障",
+    "电网本身波动"
+  ],
+  "troubleshoot_steps": [
+    "测量电机输入端电压",
+    "检查接线端子",
+    "检查变频器输出",
+    "排查同线路负载"
+  ],
+  "repair_method": "紧固端子；维修变频器；调整大功率设备启停策略；必要时增加稳压装置。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "ac_heat_001",
+  "device_type": "空调",
+  "fault_type": "散热故障",
+  "fault_phenomenon": "空调运行中温度持续升高，出风口温度偏高，压缩机频繁启停，可能触发高温告警。",
+  "telemetry_signature": "temperature 呈线性爬升，持续超过 fault_threshold；current 可能同步升高。",
+  "possible_causes": [
+    "冷凝器积尘严重，换热效率下降",
+    "散热风扇转速不足或损坏",
+    "制冷剂不足或存在泄漏",
+    "机房环境温度过高或通风不良"
+  ],
+  "troubleshoot_steps": [
+    "检查冷凝器是否积尘，必要时清洗",
+    "测量散热风扇电压与转速，判断是否损坏",
+    "检查制冷剂压力是否在正常范围",
+    "检查机房环境温度与通风条件"
+  ],
+  "repair_method": "清洗冷凝器；更换损坏风扇；补充制冷剂并排查泄漏；改善通风或增加辅助散热。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,50 @@
+# AI-Native 设备智能运维平台 —— 基础设施编排
+# 服务：MySQL 8.0（业务库 + 遥测历史）、Redis 7（实时状态 + 缓存 + 分布式锁）、EMQX 5（MQTT Broker）
+# 启动：docker compose up -d    停止：docker compose down
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456   # 开发环境密码，生产需改
+      MYSQL_DATABASE: ai_ops            # 启动时自动创建主库
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql       # 数据持久化到 E 盘 Docker 卷
+    command:
+      - --character-set-server=utf8mb4  # 统一 utf8mb4 字符集，避免中文乱码
+      - --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes  # AOF 持久化，重启不丢缓存
+
+  emqx:
+    image: emqx/emqx:latest
+    container_name: emqx
+    restart: unless-stopped
+    ports:
+      - "1883:1883"     # MQTT 协议（设备遥测上报走这里）
+      - "8083:8083"     # MQTT over WebSocket（前端可选）
+      - "18083:18083"   # EMQX 管理面板 Dashboard
+    environment:
+      - EMQX_DASHBOARD__DEFAULT_USERNAME=admin   # 面板账号
+      - EMQX_DASHBOARD__DEFAULT_PASSWORD=public  # 面板密码（开发用）
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-log:/opt/emqx/log
+
+volumes:
+  mysql-data:
+  redis-data:
+  emqx-data:
+  emqx-log:

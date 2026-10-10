@@ -1,0 +1,22 @@
+{
+  "id": "cabinet_offline_001",
+  "device_type": "配电柜",
+  "fault_type": "掉线",
+  "fault_phenomenon": "配电柜监控终端与平台失去通信，遥测中断，无法远程查看电气参数。",
+  "telemetry_signature": "无新 telemetry 写入；last_seen 停止更新。",
+  "possible_causes": [
+    "监控终端断电",
+    "通信模块故障或网线松动",
+    "MQTT 客户端异常退出",
+    "IP 地址冲突"
+  ],
+  "troubleshoot_steps": [
+    "检查监控终端供电",
+    "检查通信模块与网线",
+    "检查 MQTT 客户端日志",
+    "排查 IP 冲突"
+  ],
+  "repair_method": "恢复供电；更换通信模块或网线；重启 MQTT 客户端；修复 IP 冲突。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

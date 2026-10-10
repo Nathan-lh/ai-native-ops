@@ -1,0 +1,22 @@
+{
+  "id": "ac_humidity_001",
+  "device_type": "空调",
+  "fault_type": "湿度过高",
+  "fault_phenomenon": "空调周边湿度持续偏高，送风含湿量大，设备表面可能结露。",
+  "telemetry_signature": "humidity 持续超过 warn_threshold，严重时超过 fault_threshold。",
+  "possible_causes": [
+    "除湿功能失效或未开启",
+    "排水管堵塞导致冷凝水排出不畅",
+    "环境本身湿度过高",
+    "温湿度传感器漂移"
+  ],
+  "troubleshoot_steps": [
+    "检查空调除湿模式是否正常",
+    "检查排水管是否堵塞",
+    "对比其他温湿度传感器数据，排除传感器漂移",
+    "检查房间密封与新风系统"
+  ],
+  "repair_method": "修复除湿功能；疏通排水管；校准或更换传感器；加强通风或增加除湿设备。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

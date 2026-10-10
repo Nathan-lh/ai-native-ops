@@ -1,0 +1,22 @@
+{
+  "id": "ac_overload_001",
+  "device_type": "空调",
+  "fault_type": "过载",
+  "fault_phenomenon": "空调运行电流持续偏高，压缩机频繁热保护，甚至跳闸。",
+  "telemetry_signature": "current 持续高于 fault_threshold；temperature 同步偏高。",
+  "possible_causes": [
+    "压缩机负载过大或机械卡涩",
+    "电源电压偏低导致电流增大",
+    "冷凝器散热不良造成高压",
+    "启动电容老化导致启动电流过大"
+  ],
+  "troubleshoot_steps": [
+    "测量供电电压是否正常",
+    "检查压缩机运转声音与机械阻力",
+    "检查冷凝器是否积尘",
+    "测量启动电容容量是否衰减"
+  ],
+  "repair_method": "修复供电电压；检修或更换压缩机；清洗冷凝器；更换启动电容。",
+  "severity": "高",
+  "source": "自建运维手册"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "motor_offline_001",
+  "device_type": "电机",
+  "fault_type": "掉线",
+  "fault_phenomenon": "电机控制器与平台失去通信，遥测中断，无法远程控制启停。",
+  "telemetry_signature": "无新 telemetry 写入；last_seen 停止更新。",
+  "possible_causes": [
+    "控制器断电或通信模块故障",
+    "网线或光纤松动",
+    "MQTT 客户端异常退出",
+    "IP 地址冲突"
+  ],
+  "troubleshoot_steps": [
+    "检查控制器供电",
+    "检查网线或光纤连接",
+    "检查 MQTT 客户端日志",
+    "排查 IP 冲突"
+  ],
+  "repair_method": "恢复供电；重新插拔或更换通信线缆；重启 MQTT 客户端；修复 IP 冲突。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

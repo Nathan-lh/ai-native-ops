@@ -1,0 +1,30 @@
+[
+  {"query": "空调运行时温度一直往上涨，出风口很热", "expected_ids": ["ac_heat_001"]},
+  {"query": "空调开着但房间湿度越来越高，墙上都结露了", "expected_ids": ["ac_humidity_001"]},
+  {"query": "空调电流很大，压缩机频繁热保护", "expected_ids": ["ac_overload_001"]},
+  {"query": "空调供电电压在抖动，室内机指示灯一直闪", "expected_ids": ["ac_voltage_001"]},
+  {"query": "空调噪声变大，风扇振动明显", "expected_ids": ["ac_wear_001"]},
+  {"query": "空调连不上平台了，遥测中断", "expected_ids": ["ac_offline_001"]},
+
+  {"query": "电机电流突然增大，转速下降", "expected_ids": ["motor_overload_001"]},
+  {"query": "电机振动越来越大，噪声也变大了", "expected_ids": ["motor_wear_001"]},
+  {"query": "电机外壳烫手，热保护频繁动作", "expected_ids": ["motor_heat_001"]},
+  {"query": "电机供电电压波动，转速不稳", "expected_ids": ["motor_voltage_001"]},
+  {"query": "电机绕组受潮，绝缘电阻下降", "expected_ids": ["motor_humidity_001"]},
+  {"query": "电机控制器连不上，遥测断了", "expected_ids": ["motor_offline_001"]},
+
+  {"query": "配电柜输出电压不稳定，灯一直闪", "expected_ids": ["cabinet_voltage_001"]},
+  {"query": "配电柜总电流太高，断路器快跳闸了", "expected_ids": ["cabinet_overload_001"]},
+  {"query": "配电柜内部温度过高，柜体发烫", "expected_ids": ["cabinet_heat_001"]},
+  {"query": "配电柜内壁出现凝露，绝缘下降", "expected_ids": ["cabinet_humidity_001"]},
+  {"query": "配电柜监控终端失联，读不到电气参数", "expected_ids": ["cabinet_offline_001"]},
+  {"query": "配电柜断路器分合闸卡涩", "expected_ids": ["cabinet_wear_001"]},
+
+  {"query": "温湿度传感器很久没有上报数据了", "expected_ids": ["sensor_offline_001"]},
+  {"query": "传感器供电电压波动，上报断断续续", "expected_ids": ["sensor_voltage_001"]},
+  {"query": "传感器探头受潮，湿度读数异常偏高", "expected_ids": ["sensor_humidity_001"]},
+  {"query": "传感器读数与标准值偏差越来越大", "expected_ids": ["sensor_drift_001"]},
+
+  {"query": "设备心跳丢了，遥测数据中断", "expected_ids": ["common_offline_001"]},
+  {"query": "设备频繁重启，无法开机", "expected_ids": ["common_power_001"]}
+]

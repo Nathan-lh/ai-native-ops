@@ -1,0 +1,39 @@
+# ============================================
+# AI-Native 设备智能运维平台 —— 后端配置
+# ============================================
+
+# 服务基础配置
+server:
+  port: 8080                              # 后端端口
+
+spring:
+  application:
+    name: ai-ops-backend                   # 服务名
+  # MySQL 数据源（连接 Docker 里已启动的 MySQL）
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_ops?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root                        # 和 docker-compose.yml 里 MYSQL_ROOT_PASSWORD 对应
+    password: root123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Redis（连接 Docker 里已启动的 Redis）
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true    # 数据库下划线字段自动转驼峰（device_name -> deviceName）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 控制台打印 SQL，开发期便于观察
+  global-config:
+    db-config:
+      id-type: auto
+
+# MQTT 配置
+mqtt:
+  broker: tcp://localhost:1883
+  client-id: ai-ops-backend-${random.int(1000,9999)}
+  topic: telemetry/#
+  qos: 0

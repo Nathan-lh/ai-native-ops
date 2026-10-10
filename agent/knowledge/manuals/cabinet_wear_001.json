@@ -1,0 +1,22 @@
+{
+  "id": "cabinet_wear_001",
+  "device_type": "配电柜",
+  "fault_type": "机械磨损",
+  "fault_phenomenon": "配电柜断路器操动机构机械磨损，分合闸卡涩或声音异常。",
+  "telemetry_signature": "无明显遥测异常；操作记录中分合闸时间可能变长。",
+  "possible_causes": [
+    "断路器操动机构长期使用磨损",
+    "润滑不足",
+    "弹簧机构疲劳",
+    "机械连杆变形"
+  ],
+  "troubleshoot_steps": [
+    "检查断路器分合闸动作",
+    "检查操动机构润滑",
+    "检查弹簧机构",
+    "检查连杆是否变形"
+  ],
+  "repair_method": "补充润滑；更换磨损部件；更换弹簧；校正或更换连杆。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

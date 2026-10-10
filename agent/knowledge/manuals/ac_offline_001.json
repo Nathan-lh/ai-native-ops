@@ -1,0 +1,22 @@
+{
+  "id": "ac_offline_001",
+  "device_type": "空调",
+  "fault_type": "掉线",
+  "fault_phenomenon": "空调控制器与平台失去通信，遥测中断，无法远程控制。",
+  "telemetry_signature": "无新 telemetry 写入；device_latest_status.last_seen 长时间未更新。",
+  "possible_causes": [
+    "通信模块故障或网线松动",
+    "空调断电或空开跳闸",
+    "MQTT 客户端异常退出",
+    "IP 地址冲突"
+  ],
+  "troubleshoot_steps": [
+    "检查空调是否断电",
+    "检查通信模块指示灯与网线",
+    "检查 MQTT 客户端日志",
+    "检查 IP 地址冲突"
+  ],
+  "repair_method": "恢复供电；重新插拔网线或更换通信模块；重启 MQTT 客户端；修复 IP 冲突。",
+  "severity": "中",
+  "source": "自建运维手册"
+}

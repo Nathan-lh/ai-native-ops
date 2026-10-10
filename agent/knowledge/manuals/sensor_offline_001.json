@@ -1,0 +1,22 @@
+{
+  "id": "sensor_offline_001",
+  "device_type": "温湿度传感器",
+  "fault_type": "掉线",
+  "fault_phenomenon": "温湿度传感器长时间无数据上报，平台显示离线或 last_seen 长时间未更新。",
+  "telemetry_signature": "无新 telemetry 写入；device_latest_status.last_seen 停止更新。",
+  "possible_causes": [
+    "电池电量耗尽",
+    "网络信号弱或网关故障",
+    "传感器硬件损坏",
+    "MQTT 客户端掉线未重连"
+  ],
+  "troubleshoot_steps": [
+    "检查电池电压或供电",
+    "检查网关与信号强度",
+    "替换同型号传感器验证",
+    "查看 MQTT 连接日志"
+  ],
+  "repair_method": "更换电池；修复网络或网关；更换传感器；修复 MQTT 重连逻辑。",
+  "severity": "低",
+  "source": "自建运维手册"
+}
