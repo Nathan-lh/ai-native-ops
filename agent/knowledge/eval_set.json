@@ -1,30 +1,97 @@
 [
-  {"query": "空调运行时温度一直往上涨，出风口很热", "expected_ids": ["ac_heat_001"]},
-  {"query": "空调开着但房间湿度越来越高，墙上都结露了", "expected_ids": ["ac_humidity_001"]},
-  {"query": "空调电流很大，压缩机频繁热保护", "expected_ids": ["ac_overload_001"]},
-  {"query": "空调供电电压在抖动，室内机指示灯一直闪", "expected_ids": ["ac_voltage_001"]},
-  {"query": "空调噪声变大，风扇振动明显", "expected_ids": ["ac_wear_001"]},
-  {"query": "空调连不上平台了，遥测中断", "expected_ids": ["ac_offline_001"]},
+  {"query": "空调出风口温度一直往上升，开了也不凉", "expected_ids": ["ac_heat_001"], "type": "positive"},
+  {"query": "制冷效果差，压缩机频繁启停，怀疑是不是制冷剂不够了", "expected_ids": ["ac_heat_001"], "type": "positive"},
+  {"query": "机房的空调开了半天房间还是闷热", "expected_ids": ["ac_heat_001"], "type": "positive"},
 
-  {"query": "电机电流突然增大，转速下降", "expected_ids": ["motor_overload_001"]},
-  {"query": "电机振动越来越大，噪声也变大了", "expected_ids": ["motor_wear_001"]},
-  {"query": "电机外壳烫手，热保护频繁动作", "expected_ids": ["motor_heat_001"]},
-  {"query": "电机供电电压波动，转速不稳", "expected_ids": ["motor_voltage_001"]},
-  {"query": "电机绕组受潮，绝缘电阻下降", "expected_ids": ["motor_humidity_001"]},
-  {"query": "电机控制器连不上，遥测断了", "expected_ids": ["motor_offline_001"]},
+  {"query": "空调开着但房间湿度越来越大，墙上都有水珠", "expected_ids": ["ac_humidity_001"], "type": "positive"},
+  {"query": "送风口有冷凝水滴下来，是不是除湿坏了", "expected_ids": ["ac_humidity_001"], "type": "positive"},
 
-  {"query": "配电柜输出电压不稳定，灯一直闪", "expected_ids": ["cabinet_voltage_001"]},
-  {"query": "配电柜总电流太高，断路器快跳闸了", "expected_ids": ["cabinet_overload_001"]},
-  {"query": "配电柜内部温度过高，柜体发烫", "expected_ids": ["cabinet_heat_001"]},
-  {"query": "配电柜内壁出现凝露，绝缘下降", "expected_ids": ["cabinet_humidity_001"]},
-  {"query": "配电柜监控终端失联，读不到电气参数", "expected_ids": ["cabinet_offline_001"]},
-  {"query": "配电柜断路器分合闸卡涩", "expected_ids": ["cabinet_wear_001"]},
+  {"query": "空调压缩机电流太大，老跳闸", "expected_ids": ["ac_overload_001"], "type": "positive"},
+  {"query": "空调运行电流一直偏高，压缩机热保护频繁动作", "expected_ids": ["ac_overload_001"], "type": "positive"},
 
-  {"query": "温湿度传感器很久没有上报数据了", "expected_ids": ["sensor_offline_001"]},
-  {"query": "传感器供电电压波动，上报断断续续", "expected_ids": ["sensor_voltage_001"]},
-  {"query": "传感器探头受潮，湿度读数异常偏高", "expected_ids": ["sensor_humidity_001"]},
-  {"query": "传感器读数与标准值偏差越来越大", "expected_ids": ["sensor_drift_001"]},
+  {"query": "空调供电电压忽高忽低，室内机指示灯闪", "expected_ids": ["ac_voltage_001"], "type": "positive"},
+  {"query": "空调用电不稳定，压缩机启停异常", "expected_ids": ["ac_voltage_001"], "type": "positive"},
 
-  {"query": "设备心跳丢了，遥测数据中断", "expected_ids": ["common_offline_001"]},
-  {"query": "设备频繁重启，无法开机", "expected_ids": ["common_power_001"]}
+  {"query": "空调运转噪声特别大，听着像风扇在抖", "expected_ids": ["ac_wear_001"], "type": "positive"},
+  {"query": "空调压缩机异响，是不是轴承磨坏了", "expected_ids": ["ac_wear_001"], "type": "positive"},
+
+  {"query": "空调控制器连不上平台了，遥测数据中断", "expected_ids": ["ac_offline_001"], "type": "positive"},
+  {"query": "空调设备失联，远程控制不了", "expected_ids": ["ac_offline_001"], "type": "positive"},
+
+  {"query": "电机电流突然变得很大，转速也掉下来了", "expected_ids": ["motor_overload_001"], "type": "positive"},
+  {"query": "电机负载转不动，卡得很死，电流飙升", "expected_ids": ["motor_overload_001"], "type": "positive"},
+  {"query": "电机声音发闷，转起来很吃力", "expected_ids": ["motor_overload_001"], "type": "positive"},
+
+  {"query": "电机振动越来越大，坐旁边都能感觉到抖", "expected_ids": ["motor_wear_001"], "type": "positive"},
+  {"query": "电机地脚螺栓松了，联轴器对中也不正", "expected_ids": ["motor_wear_001"], "type": "positive"},
+
+  {"query": "电机外壳特别烫，手都不敢碰", "expected_ids": ["motor_heat_001"], "type": "positive"},
+  {"query": "电机温度持续升高，热保护频繁跳", "expected_ids": ["motor_heat_001"], "type": "positive"},
+
+  {"query": "电机供电电压在抖，转速忽快忽慢", "expected_ids": ["motor_voltage_001"], "type": "positive"},
+  {"query": "电机启停异常，怀疑是变频器输出有问题", "expected_ids": ["motor_voltage_001"], "type": "positive"},
+
+  {"query": "电机绕组受潮了，绝缘电阻往下掉", "expected_ids": ["motor_humidity_001"], "type": "positive"},
+  {"query": "电机运行环境湿度太高，怕短路", "expected_ids": ["motor_humidity_001"], "type": "positive"},
+
+  {"query": "电机控制器失联了，读不到数据", "expected_ids": ["motor_offline_001"], "type": "positive"},
+  {"query": "电机连不上网，远程启动不了", "expected_ids": ["motor_offline_001"], "type": "positive"},
+
+  {"query": "配电柜输出电压不稳，灯一闪一闪的", "expected_ids": ["cabinet_voltage_001"], "type": "positive"},
+  {"query": "配电柜电压周期性抖动，敏感设备老重启", "expected_ids": ["cabinet_voltage_001"], "type": "positive"},
+
+  {"query": "配电柜总电流太高，断路器快撑不住了", "expected_ids": ["cabinet_overload_001"], "type": "positive"},
+  {"query": "配电柜柜内温度高，电流持续偏高", "expected_ids": ["cabinet_overload_001"], "type": "positive"},
+
+  {"query": "配电柜里面特别烫，柜体都发热", "expected_ids": ["cabinet_heat_001"], "type": "positive"},
+  {"query": "配电柜散热风扇不转，内部温度一直升", "expected_ids": ["cabinet_heat_001"], "type": "positive"},
+
+  {"query": "配电柜内壁出现凝露，母排上有水", "expected_ids": ["cabinet_humidity_001"], "type": "positive"},
+  {"query": "配电柜内部湿度太高，绝缘下降", "expected_ids": ["cabinet_humidity_001"], "type": "positive"},
+
+  {"query": "配电柜监控终端连不上，读不到电气参数", "expected_ids": ["cabinet_offline_001"], "type": "positive"},
+  {"query": "配电柜的数据中断了，看不到电流电压", "expected_ids": ["cabinet_offline_001"], "type": "positive"},
+
+  {"query": "配电柜断路器分合闸卡涩，动作不顺畅", "expected_ids": ["cabinet_wear_001"], "type": "positive"},
+  {"query": "配电柜开关操作机构声音异常", "expected_ids": ["cabinet_wear_001"], "type": "positive"},
+
+  {"query": "温湿度传感器长时间没有数据了", "expected_ids": ["sensor_offline_001"], "type": "positive"},
+  {"query": "传感器电池没电了，网关也没信号", "expected_ids": ["sensor_offline_001"], "type": "positive"},
+
+  {"query": "传感器上报断断续续，数据一跳一跳的", "expected_ids": ["sensor_voltage_001"], "type": "positive"},
+  {"query": "传感器电源不稳，读数乱跳", "expected_ids": ["sensor_voltage_001"], "type": "positive"},
+
+  {"query": "传感器探头受潮了，湿度读数偏高", "expected_ids": ["sensor_humidity_001"], "type": "positive"},
+  {"query": "传感器长期在高湿环境下，读数不准", "expected_ids": ["sensor_humidity_001"], "type": "positive"},
+
+  {"query": "传感器读数和标准值偏差越来越大", "expected_ids": ["sensor_drift_001"], "type": "positive"},
+  {"query": "温湿度探头老化，需要校准了", "expected_ids": ["sensor_drift_001"], "type": "positive"},
+
+  {"query": "设备心跳丢了，遥测数据中断", "expected_ids": ["common_offline_001"], "type": "positive"},
+  {"query": "设备整体离线，平台上一直显示不出来", "expected_ids": ["common_offline_001"], "type": "positive"},
+
+  {"query": "设备频繁重启，无法正常开机", "expected_ids": ["common_power_001"], "type": "positive"},
+  {"query": "设备供电异常，反复掉电重启", "expected_ids": ["common_power_001"], "type": "positive"},
+
+  {"query": "机房的服务器主板烧了怎么办", "expected_ids": [], "type": "negative"},
+  {"query": "打印机一直卡纸，怎么修", "expected_ids": [], "type": "negative"},
+  {"query": "办公电脑开机蓝屏", "expected_ids": [], "type": "negative"},
+  {"query": "网络交换机端口不亮", "expected_ids": [], "type": "negative"},
+  {"query": "UPS 电池老化需要更换吗", "expected_ids": [], "type": "negative"},
+  {"query": "监控摄像头画面模糊", "expected_ids": [], "type": "negative"},
+  {"query": "门禁刷卡反应不灵", "expected_ids": [], "type": "negative"},
+  {"query": "会议室投影仪不亮", "expected_ids": [], "type": "negative"},
+  {"query": "饮水机漏水了", "expected_ids": [], "type": "negative"},
+  {"query": "空调遥控器丢了怎么配", "expected_ids": [], "type": "negative"},
+  {"query": "机房消防喷淋怎么测试", "expected_ids": [], "type": "negative"},
+  {"query": "电梯年检怎么申报", "expected_ids": [], "type": "negative"},
+
+  {"query": "设备发热怎么处理", "expected_ids": ["ac_heat_001", "motor_heat_001", "cabinet_heat_001"], "type": "vague"},
+  {"query": "电流太大是什么问题", "expected_ids": ["motor_overload_001", "cabinet_overload_001", "ac_overload_001"], "type": "vague"},
+  {"query": "设备一直掉线", "expected_ids": ["common_offline_001", "ac_offline_001", "motor_offline_001", "cabinet_offline_001", "sensor_offline_001"], "type": "vague"},
+  {"query": "设备振动厉害", "expected_ids": ["motor_wear_001", "ac_wear_001"], "type": "vague"},
+  {"query": "电压不稳怎么办", "expected_ids": ["cabinet_voltage_001", "ac_voltage_001", "motor_voltage_001", "sensor_voltage_001"], "type": "vague"},
+  {"query": "湿度报警了", "expected_ids": ["ac_humidity_001", "motor_humidity_001", "cabinet_humidity_001", "sensor_humidity_001"], "type": "vague"},
+  {"query": "设备开不了机", "expected_ids": ["common_power_001"], "type": "vague"},
+  {"query": "传感器读数不准", "expected_ids": ["sensor_drift_001", "sensor_humidity_001"], "type": "vague"}
 ]
