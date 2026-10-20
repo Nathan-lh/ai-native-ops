@@ -1,6 +1,6 @@
 # AI-Native 设备智能运维平台
 
-> 设备遥测数据经 **MQTT 高并发接入** Java 后端并实时评估健康状态；**Python Agent** 提供自然语言观测、基于「遥测趋势 + 维修知识库 + 历史工单」的**有证据智能诊断**与一键生成工单；工单完成后设备状态**自动恢复**、维修结论**回流知识库**，形成"越用越准"的闭环。
+> 设备遥测数据经 **MQTT 高并发接入** Java 后端并实时评估健康状态；**Python Agent** 提供自然语言观测、基于「遥测趋势 + 维修知识库 + 历史工单」的**有证据智能诊断**并引导建单、前端一键生成工单；工单完成后设备状态**自动恢复**、维修结论**回流知识库**，形成"越用越准"的闭环。
 
 ## 架构
 
@@ -43,7 +43,7 @@ flowchart LR
 解决不了 → 生成工单 → 状态机流转
   PENDING_REVIEW → ASSIGNED → REPAIRING → VERIFYING → COMPLETED
 COMPLETED 后 → 遥测连续 N 次正常 → 设备状态自动恢复 NORMAL
-维修记录(真实原因) → 人工审核 + 版本化 → 回流知识库 → 越用越准
+维修记录(真实原因) → 人工审核 → 回流知识库 → 越用越准
 ```
 
 ## 快速启动
@@ -90,6 +90,16 @@ npm install
 npm run dev
 ```
 
+### 6. 压测脚本（可选）
+
+```bash
+cd simulator
+# MQTT 洪峰压测（--rate 限速 / 0 不限速打洪峰两模式）
+python mqtt_load_test.py --total 50000 --rate 1000
+# HTTP 接口 QPS 压测
+python http_load_test.py --url http://localhost:8080/api/health --total 10000 --concurrency 50
+```
+
 ### 测试账号
 
 | 用户名 | 角色 | 密码 |
@@ -107,12 +117,12 @@ npm run dev
 
 ### 2. 有证据的 RAG 智能诊断（四层）
 ```
-结构化知识库(24 篇故障手册，4 类设备 × 6 类故障)
+结构化知识库(25 篇故障手册，4 类设备、9 类故障)
   → BM25 关键词 + 向量语义召回 → RRF 倒数排名融合(k=60)
   → Cross-Encoder(BGE-Reranker) 精排
   → 低分兜底(< 0.6 判未命中 → 引导建工单)
 ```
-- 自建 24 条评估集，**Recall@1 达 100%**
+- 自建 70 条评估集（50 正 / 12 负 / 8 模糊），**Recall@1 达 100%**
 - 诊断结论附维修依据（现象 / 可能原因 / 排查步骤 / 维修方法），而非凭空生成
 
 ### 3. 工单状态机 + 三重并发保障
@@ -122,20 +132,39 @@ npm run dev
 
 ### 4. 状态恢复 + 知识闭环
 - 遥测连续 N 次正常去抖判定 → `VERIFYING` 工单自动 `COMPLETED`、设备恢复 `NORMAL`
-- 维修结论经**人工审核 + 版本化**回流知识库，实现"越用越准"
+- 维修结论经**人工审核**后回流知识库，实现"越用越准"
 
 ### 5. 缓存一致性 + 单点登录
 - **Cache-Aside + 延迟双删**：写先更 DB → 删缓存 → 延迟再删一次，保证缓存强一致
 - Redis 存储 token 版本，旧 token 秒级失效，实现单点登录
+
+### 6. 性能压测与优化
+
+- **MQTT 高并发入库压测**（50 台设备洪峰上报，端到端测入库吞吐）
+  - 优化前 **75 条/s** → 优化后 **400 条/s**，**5.3 倍**提升
+  - 优化手段：真批量 INSERT（一条 SQL 多 VALUES，取代逐条 insert）+ 设备类型本地缓存（`ConcurrentHashMap` 取代每条查库）+ 状态快照 `upsert`（`ON DUPLICATE KEY UPDATE` 取代"先查再写"）+ 热路径日志降级（`log.info` → `log.debug`）
+- **背压保护**：有界队列（容量 10000），队列满非阻塞丢弃并告警，保证洪峰下核心链路不被打垮
+- **HTTP 接口 QPS**（50 并发，`http_load_test.py`）
+
+| 接口 | QPS | P99 | 说明 |
+|---|---|---|---|
+| `/api/health` | ~3087 req/s | 39ms | 无依赖探活 |
+| `/api/devices/cache`（命中 Redis） | ~2905 req/s | — | 约 6 倍于回源 DB |
+| `/api/devices`（回源 MySQL） | ~469 req/s | — | 验证缓存收益 |
+
+## 文档
+
+- [接口文档](./docs/API.md)：全部 REST 接口说明（鉴权白名单、角色权限、工单状态机）
 
 ## 目录结构
 
 ```
 ├── backend/      Java 后端（Spring Boot 3）
 ├── agent/        Python Agent（FastAPI + LangGraph + RAG）
-├── simulator/    设备遥测模拟器
+├── simulator/    设备遥测模拟器 + 压测脚本
 ├── frontend/     Vue3 前端
-├── docs/         数据库脚本 / 设计文档
+├── docs/         数据库脚本 / 设计文档 / 接口文档（API.md）
+├── LICENSE       MIT 开源协议
 └── docker-compose.yml
 ```
 
@@ -157,4 +186,4 @@ npm run dev
 
 ## 许可
 
-个人学习 / 演示项目。
+[MIT](./LICENSE) · Copyright (c) 2026 刘欢 (Nathan-lh)
