@@ -45,6 +45,9 @@ public class TelemetryService {
     // 设备编码 -> 设备ID 的本地缓存，避免每次查库
     private final java.util.concurrent.ConcurrentHashMap<String, Long> deviceCache = new java.util.concurrent.ConcurrentHashMap<>();
 
+    // 设备ID -> 设备类型 的本地缓存，避免每条遥测都查一次 device 表
+    private final java.util.concurrent.ConcurrentHashMap<Long, String> deviceTypeCache = new java.util.concurrent.ConcurrentHashMap<>();
+
     public void receiveTelemetry(TelemetryMessage msg) {
         try {
             Telemetry telemetry = convertToEntity(msg);
@@ -90,17 +93,16 @@ public class TelemetryService {
         if (batch.isEmpty()) return;
         long start = System.currentTimeMillis();
         try {
-            for (Telemetry t : batch) {
-                telemetryMapper.insert(t);
+            // 1. 真正的批量插入：一条 SQL 插入整批，大幅减少 DB 往返
+            telemetryMapper.batchInsert(batch);
 
-                // 获取设备类型
+            // 2. 逐条做健康评估 + 更新状态快照
+            for (Telemetry t : batch) {
                 String deviceType = getDeviceTypeById(t.getDeviceId());
-                // 1. 执行健康评估
                 String status = healthEvaluator.evaluate(t, deviceType);
-                // 2. 更新快照与设备表状态
                 updateLatestStatus(t, status);
             }
-            log.info("[攒批入库] 成功插入 {} 条数据，耗时 {} ms", batch.size(), System.currentTimeMillis() - start);
+            log.info("[攒批入库] 成功批量插入 {} 条数据，耗时 {} ms", batch.size(), System.currentTimeMillis() - start);
 
             // 每批遥测处理后，检测 VERIFYING 工单是否满足恢复条件
             deviceRecoveryService.tryRecover();
@@ -111,8 +113,10 @@ public class TelemetryService {
     }
 
     private String getDeviceTypeById(Long deviceId) {
-        Device d = deviceMapper.selectById(deviceId);
-        return d != null ? d.getDeviceType() : "DEFAULT";
+        return deviceTypeCache.computeIfAbsent(deviceId, id -> {
+            Device d = deviceMapper.selectById(id);
+            return d != null ? d.getDeviceType() : "DEFAULT";
+        });
     }
 
     private void updateLatestStatus(Telemetry t, String status) {
@@ -160,6 +164,8 @@ public class TelemetryService {
                 deviceMapper.insert(device);
                 log.info("[设备注册] 动态注册新设备: {}", code);
             }
+            // 顺便缓存 deviceId -> deviceType，避免每条遥测都查 device 表
+            deviceTypeCache.put(device.getId(), device.getDeviceType());
             return device.getId();
         });
     }

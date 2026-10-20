@@ -85,23 +85,19 @@ public class DeviceStatusCacheService {
         Long deviceId = snapshot.getDeviceId();
         String key = KEY_PREFIX + deviceId;
 
-        // 1. 先更新 MySQL
-        if (statusMapper.selectById(deviceId) == null) {
-            statusMapper.insert(snapshot);
-        } else {
-            statusMapper.updateById(snapshot);
-        }
-        log.info("[缓存] DB 更新完成 deviceId={}", deviceId);
+        // 1. 先更新 MySQL（一条 upsert 取代原来的"先查再写"，减少一次 DB 往返）
+        statusMapper.upsert(snapshot);
+        log.debug("[缓存] DB 更新完成 deviceId={}", deviceId);
 
         // 2. 删除 Redis（第一次删）
         redis.delete(key);
-        log.info("[缓存] 第一次删除 key={}", key);
+        log.debug("[缓存] 第一次删除 key={}", key);
 
         // 3. 延迟 500ms 再删一次（延迟双删）
         scheduler.schedule(() -> {
             try {
                 redis.delete(key);
-                log.info("[缓存] 延迟双删完成 key={}", key);
+                log.debug("[缓存] 延迟双删完成 key={}", key);
             } catch (Exception e) {
                 log.error("[缓存] 延迟双删异常 key={}", key, e);
             }
