@@ -104,8 +104,15 @@ def get_collection():
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
     return client.get_collection(COLLECTION_NAME)
 
+
+# Embedding 模型全局单例：避免每次检索都重新加载约 100MB 的 BGE 模型
+_model = None
+
 def get_model():
-    return SentenceTransformer(MODEL_NAME)
+    global _model
+    if _model is None:
+        _model = SentenceTransformer(MODEL_NAME)
+    return _model
 
 if __name__ == "__main__":
     build_knowledge_base()

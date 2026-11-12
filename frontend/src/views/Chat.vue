@@ -3,7 +3,8 @@ import { ref, nextTick, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../stores/user'
 
-const AGENT_URL = 'http://localhost:8000'
+// 生产架构：前端不再直连 Python(8000)，统一走 Java(8080) 网关转发（带 JWT 鉴权）
+const AGENT_URL = 'http://localhost:8080/api/agent'
 const userStore = useUserStore()
 
 const sessionId = ref('')
@@ -123,9 +124,12 @@ async function sendMessage(text) {
 
   sending.value = true
   try {
-    const resp = await fetch(`${AGENT_URL}/api/chat/stream`, {
+    const resp = await fetch(`${AGENT_URL}/chat/stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`
+      },
       body: JSON.stringify({ session_id: sessionId.value, message: content })
     })
 

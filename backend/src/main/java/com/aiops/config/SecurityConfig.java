@@ -24,6 +24,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final InternalTokenFilter internalTokenFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -50,7 +51,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 // 把 JWT 过滤器加在用户名密码过滤器之前
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // 内部鉴权过滤器：保护 /api/agent/tools/**，放在 JWT 之前
+                .addFilterBefore(internalTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -10,15 +10,15 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
-from agent_core import agent, tools
+from agent_core import agent, tools, MAX_ITERATIONS
 from session_manager import build_context, append_turn, clear_session, list_sessions
 
 app = FastAPI(title="AI-Native 设备运维 Agent")
 
-# 允许前端跨域
+# 生产架构下前端不再直连本服务，而是经 Java(8080) 网关转发，故收窄跨域来源
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:8080", "http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -86,7 +86,8 @@ async def chat_stream(req: ChatRequest, request: Request):
             tool_calls_record = []
 
             async for event in agent.astream_events(
-                {"messages": context}, version="v2"
+                {"messages": context}, version="v2",
+                config={"recursion_limit": MAX_ITERATIONS},
             ):
                 if await request.is_disconnected():
                     return

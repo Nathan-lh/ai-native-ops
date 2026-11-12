@@ -8,12 +8,12 @@ LangGraph ReAct Agent 核心逻辑
 - 支持多轮上下文（_history 模块级维护，后续接 FastAPI 会改成按 session 存）
 """
 import os
+import time
 import requests
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
-from langchain_core.tools import tool
 from retriever import build_bm25_index, hybrid_search
 
 # 全局懒加载 BM25，避免每次调用都重建索引
@@ -33,9 +33,31 @@ DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
 JAVA_BASE = os.getenv("JAVA_BACKEND_URL", "http://localhost:8080")
+# 服务间鉴权 token：调用 Java /api/agent/tools/* 时携带，需与后端配置一致
+INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "")
 
 if not DEEPSEEK_API_KEY:
     raise RuntimeError("未找到 DEEPSEEK_API_KEY，请检查 .env 文件")
+
+
+# ============ 带重试的 HTTP GET（工具调用统一走这里） ============
+def _get(url, params=None, retries=2):
+    """
+    工具调用的统一 GET 封装：
+    - timeout=15s，防止下游拖死 Python 线程
+    - 失败最多重试 retries 次（简单线性退避）
+    - 自动附加 X-Internal-Token 服务间鉴权头
+    """
+    headers = {"X-Internal-Token": INTERNAL_TOKEN} if INTERNAL_TOKEN else {}
+    last_err = None
+    for i in range(retries + 1):
+        try:
+            return requests.get(url, params=params, headers=headers, timeout=15)
+        except requests.RequestException as e:
+            last_err = e
+            if i < retries:
+                time.sleep(0.5 * (i + 1))
+    raise last_err
 
 # ============ 定义 LLM ============
 llm = ChatOpenAI(
@@ -60,7 +82,7 @@ def list_devices(status: str = "", device_type: str = "", keyword: str = "", lim
         params["deviceType"] = device_type
     if keyword:
         params["keyword"] = keyword
-    r = requests.get(f"{JAVA_BASE}/api/agent/tools/devices", params=params, timeout=15)
+    r = _get(f"{JAVA_BASE}/api/agent/tools/devices", params=params)
     r.raise_for_status()
     return r.text
 
@@ -68,8 +90,8 @@ def list_devices(status: str = "", device_type: str = "", keyword: str = "", lim
 @tool
 def get_device_status(device_id: int) -> str:
     """查询某台设备的实时状态、最新遥测数据。参数 device_id 是设备数字 ID。"""
-    r = requests.get(f"{JAVA_BASE}/api/agent/tools/device-status",
-                     params={"deviceId": device_id}, timeout=15)
+    r = _get(f"{JAVA_BASE}/api/agent/tools/device-status",
+             params={"deviceId": device_id})
     if r.status_code == 404:
         return f"设备不存在：device_id={device_id}"
     r.raise_for_status()
@@ -105,10 +127,9 @@ def get_device_telemetry(device_id: int, limit: int = 100) -> str:
     """查询某台设备最近的遥测趋势数据（温度、湿度、电流、电压、振动）。
     limit 默认 100 条，一般不需要调小。
     返回体含 total（该设备遥测总数）、returned、truncated、telemetryList。"""
-    r = requests.get(
+    r = _get(
         f"{JAVA_BASE}/api/agent/tools/telemetry",
         params={"deviceId": device_id, "limit": limit},
-        timeout=15,
     )
     r.raise_for_status()
     return r.text
@@ -124,7 +145,7 @@ def list_orders(status: str = "", device_id: int = 0, limit: int = 200) -> str:
         params["status"] = status
     if device_id:
         params["deviceId"] = device_id
-    r = requests.get(f"{JAVA_BASE}/api/agent/tools/orders", params=params, timeout=15)
+    r = _get(f"{JAVA_BASE}/api/agent/tools/orders", params=params)
     r.raise_for_status()
     return r.text
 
@@ -143,12 +164,12 @@ def get_device_summary() -> str:
     - "异常设备的类型分布"
 
     【禁止】不要从 list_devices 返回的列表里数数，一律用本工具的字段直接引用。"""
-    r = requests.get(f"{JAVA_BASE}/api/agent/tools/device-summary", timeout=15)
+    r = _get(f"{JAVA_BASE}/api/agent/tools/device-summary")
     r.raise_for_status()
     return r.text
 
 
-tools = [list_devices, get_device_status, get_device_telemetry, get_device_summary, search_manual]
+tools = [list_devices, get_device_status, get_device_telemetry, get_device_summary, list_orders, search_manual]
 
 
 # ============ 系统 Prompt ============
@@ -169,7 +190,7 @@ SYSTEM_PROMPT = """你是一个设备智能运维助手，服务于实验室设�
 1. 当用户询问设备故障的原因、排查方法、维修方案时，你必须调用 search_manual 工具查询知识库。
 2. 在给出最终诊断结论前，务必先获取该设备的最新遥测数据（get_device_telemetry）以确认现状。
 3. 最终回答必须结合【知识库手册证据】和【实际遥测数据】。不能脱离手册凭空编造原因。
-4. 如果知识库检索结果的相关度很低，你必须诚实告知用户“知识库中暂无完全匹配的手册”，并建议生成维修工单（create_repair_order），绝不能强行编造。
+4. 如果知识库检索结果的相关度很低，你必须诚实告知用户“知识库中暂无完全匹配的手册”，并建议用户在前端点击“一键生成工单”由人工审核，绝不能强行编造。
 
 【硬性规则】（违反将导致回答不准确，必须严格遵守）
 1. 回答里提及"总数/共多少"时，**必须以 total 字段为准**，禁止把 returned 当总数。
@@ -206,6 +227,9 @@ SYSTEM_PROMPT = """你是一个设备智能运维助手，服务于实验室设�
 
 
 # ============ 创建 Agent ============
+# recursion_limit：限制 ReAct 循环的最大步数，防止工具反复调用陷入死循环
+MAX_ITERATIONS = 8
+
 agent = create_react_agent(
     model=llm,
     tools=tools,
@@ -251,8 +275,11 @@ def chat(user_input: str, reset: bool = False) -> dict:
     # 2. 加上本轮用户问题
     context = context + [{"role": "user", "content": user_input}]
 
-    # 3. 调用 Agent
-    result = agent.invoke({"messages": context})
+    # 3. 调用 Agent（限制最大循环步数，防止死循环）
+    result = agent.invoke(
+        {"messages": context},
+        config={"recursion_limit": MAX_ITERATIONS},
+    )
     messages = result["messages"]
 
     # 4. 提取本轮新产生的 tool_calls（因为 context 里没有历史的 tool_calls）

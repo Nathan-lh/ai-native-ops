@@ -10,6 +10,7 @@ import com.aiops.mapper.DeviceLatestStatusMapper;
 import com.aiops.mapper.DeviceMapper;
 import com.aiops.mapper.RepairOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -18,10 +19,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -36,6 +41,9 @@ public class RepairOrderService {
     private final DeviceMapper deviceMapper;
     private final DeviceLatestStatusMapper deviceLatestStatusMapper;
     private final StringRedisTemplate redis;
+
+    // 延迟双删专用调度器（事务提交后异步删缓存）
+    private final ScheduledExecutorService cacheScheduler = Executors.newScheduledThreadPool(2);
 
     // ==================== 创建工单 ====================
     @Transactional(rollbackFor = Exception.class)
@@ -112,17 +120,11 @@ public class RepairOrderService {
     public boolean rejectOrder(Long orderId, String reviewComment, Long reviewerId) {
         RepairOrder order = repairOrderMapper.selectById(orderId);
         if (order == null) throw new RuntimeException("工单不存在");
-        if (!"PENDING_REVIEW".equals(order.getStatus())) {
-            throw new RuntimeException("当前状态不允许驳回");
-        }
 
-        order.setStatus("REJECTED");
-        order.setReviewerId(reviewerId);
-        order.setReviewComment(reviewComment);
-        order.setReviewTime(LocalDateTime.now());
-
-        int rows = repairOrderMapper.updateById(order);
-        if (rows == 0) throw new RuntimeException("工单已被其他人处理");
+        // CAS 下沉：状态 + version 双条件原子更新，rows=0 即状态已被他人变更
+        int rows = repairOrderMapper.casReject(orderId, reviewerId, reviewComment,
+                LocalDateTime.now(), order.getVersion());
+        if (rows == 0) throw new RuntimeException("工单已被其他人处理或状态已变更");
         return true;
     }
 
@@ -131,16 +133,12 @@ public class RepairOrderService {
     public boolean startRepair(Long orderId, Long repairerId) {
         RepairOrder order = repairOrderMapper.selectById(orderId);
         if (order == null) throw new RuntimeException("工单不存在");
-        if (!"ASSIGNED".equals(order.getStatus())) {
-            throw new RuntimeException("当前状态不允许接单");
-        }
         if (!repairerId.equals(order.getRepairerId())) {
             throw new RuntimeException("您不是该工单的指派维修工");
         }
 
-        order.setStatus("REPAIRING");
-        int rows = repairOrderMapper.updateById(order);
-        if (rows == 0) throw new RuntimeException("工单已被其他人操作");
+        int rows = repairOrderMapper.casStartRepair(orderId, order.getVersion());
+        if (rows == 0) throw new RuntimeException("工单已被其他人操作或状态已变更");
         log.info("[工单] 接单成功 id={}, repairerId={}", orderId, repairerId);
         return true;
     }
@@ -150,20 +148,13 @@ public class RepairOrderService {
     public boolean completeRepair(Long orderId, CompleteOrderRequest req, Long repairerId) {
         RepairOrder order = repairOrderMapper.selectById(orderId);
         if (order == null) throw new RuntimeException("工单不存在");
-        if (!"REPAIRING".equals(order.getStatus())) {
-            throw new RuntimeException("当前状态不允许完成维修");
-        }
         if (!repairerId.equals(order.getRepairerId())) {
             throw new RuntimeException("您不是该工单的指派维修工");
         }
 
-        order.setStatus("VERIFYING");
-        order.setRepairComment(req.getRepairComment());
-        order.setRepairReason(req.getRepairReason());
-        order.setCompleteTime(LocalDateTime.now());
-
-        int rows = repairOrderMapper.updateById(order);
-        if (rows == 0) throw new RuntimeException("工单已被其他人操作");
+        int rows = repairOrderMapper.casCompleteRepair(orderId, req.getRepairComment(),
+                req.getRepairReason(), LocalDateTime.now(), order.getVersion());
+        if (rows == 0) throw new RuntimeException("工单已被其他人操作或状态已变更");
         log.info("[工单] 维修完成，进入待验证 id={}", orderId);
         return true;
     }
@@ -181,14 +172,11 @@ public class RepairOrderService {
     public boolean verifyPass(Long orderId) {
         RepairOrder order = repairOrderMapper.selectById(orderId);
         if (order == null) throw new RuntimeException("工单不存在");
-        if (!"VERIFYING".equals(order.getStatus())) {
-            throw new RuntimeException("当前状态不允许验证通过");
-        }
 
-        // 1. 工单状态 → COMPLETED
-        order.setStatus("COMPLETED");
-        int rows = repairOrderMapper.updateById(order);
-        if (rows == 0) throw new RuntimeException("工单已被其他人操作");
+        // 1. 工单状态 → COMPLETED（CAS 下沉：状态 + version 双条件）
+        int rows = repairOrderMapper.casVerifyPass(orderId, order.getVersion());
+        if (rows == 0) throw new RuntimeException("工单已被其他人操作或状态已变更");
+        order.setStatus("COMPLETED"); // 同步内存对象状态，供后续知识回流使用
 
         // 2. 恢复设备状态为 NORMAL
         Long deviceId = order.getDeviceId();
@@ -206,17 +194,18 @@ public class RepairOrderService {
                 deviceLatestStatusMapper.updateById(snap);
             }
 
-            // 2.2 删除 Redis 缓存（先更 DB 再删缓存 + 延迟双删）
-            String cacheKey = "device:status:" + deviceId;
-            redis.delete(cacheKey);
-            try {
-                Thread.sleep(100);
-                redis.delete(cacheKey);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            // 2.2 删除 Redis 缓存：注册到事务提交后执行，避免在事务内 sleep 长时间持有 DB 连接
+            final String cacheKey = "device:status:" + deviceId;
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    redis.delete(cacheKey);
+                    // 延迟双删：等并发读回填旧值后再删一次
+                    cacheScheduler.schedule(() -> redis.delete(cacheKey), 500, TimeUnit.MILLISECONDS);
+                }
+            });
 
-            log.info("[工单] 验证通过后设备 {} 状态已恢复 NORMAL，缓存已清理", deviceId);
+            log.info("[工单] 验证通过后设备 {} 状态已恢复 NORMAL，缓存将在事务提交后清理", deviceId);
         }
 
         // 3. 知识回流
@@ -257,5 +246,10 @@ public class RepairOrderService {
     // ==================== 查询工单详情 ====================
     public RepairOrder getOrder(Long orderId) {
         return repairOrderMapper.selectById(orderId);
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        cacheScheduler.shutdown();
     }
 }

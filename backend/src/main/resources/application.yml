@@ -37,3 +37,8 @@ mqtt:
   client-id: ai-ops-backend-${random.int(1000,9999)}
   topic: telemetry/#
   qos: 0
+
+# Agent 服务配置
+agent:
+  base-url: http://localhost:8000                # Python Agent 服务地址（Java 网关转发目标）
+  internal-token: aiops-internal-token-dev-2026  # 服务间鉴权 token（与 Python .env 的 INTERNAL_TOKEN 一致）

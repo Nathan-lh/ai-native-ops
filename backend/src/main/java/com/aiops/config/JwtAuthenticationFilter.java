@@ -28,6 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate redis;
 
+    /**
+     * 让过滤器在 ASYNC 分发（SSE 异步完成时触发）中也重新执行鉴权。
+     * 默认 OncePerRequestFilter 会跳过 ASYNC 分发，导致 SseEmitter 异步返回阶段
+     * 认证上下文丢失，被 AuthorizationFilter 判为未认证而返回 401。
+     */
+    @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return false;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
